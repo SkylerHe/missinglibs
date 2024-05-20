@@ -1,0 +1,4 @@
+CREATE TABLE missinglibs(
+t DATETIME DEFAULT CURRENT_TIMESTAMP,
+lib TEXT,
+program TEXT);
