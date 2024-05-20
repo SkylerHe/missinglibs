@@ -1,1 +1,1 @@
-# Looking for missing librarys in all the exectuable files
+# Missing libraries in the executable files
