@@ -42,8 +42,7 @@ from datetime import datetime
 """
 Steps:
 1. Open the database (datetime, lib, program)
-2. Find all executable files that have missing libraries
-3. Check for missing libraries
+2. Check for missing libraries in the exectuable files
 """
 ###
 # Global objects
@@ -76,17 +75,17 @@ def open_db(name:str) -> tuple:
                              isolation_level = 'EXCLUSIVE')
         return db, db.cursor()
 
-def check_missinglibs(f:list, cursor):
+def check_missinglibs(file:Generator, cursor):
     """
     This function checks for missing libraries 
-    in the list of executable files
+    in the generator of executable files
     """
-    for f in f:
+    for f in file:
         try:
-            result = subprocess.run(['ldd', f], 
-                                    capture_output = True,
-                                    text = True)
-            missing_libs = [l for l in result.stdout.split('\n') if 'not found' in l]
+            cmd = f"ldd {f}"
+            result = dorunrun(cmd, return_datatype = dict)
+            
+            missing_libs = [line.split()[0] for line in result['stdout'].split('\n') if 'not found' in line]
             for lib in missing_libs:
                 cursor.execute(''' INSERT INTO missinglibs 
                                 (lib, program)
@@ -100,8 +99,8 @@ def check_missinglibs(f:list, cursor):
 
 @trap
 def missing_libs_main(myargs:argparse.Namespace) -> int:
-    db, cursor = create_or_open_db('missinglibs.db')
-    exec_files = all_files_not_like('/home/skyler/hpclib', '.so')
+    db, cursor = open_db(myargs.db_path)
+    exec_files = all_files_not_like(myargs.search_path, myargs.file_extension)
     check_missinglibs(exec_files, cursor)
     db.commit()
     db.close()
@@ -112,7 +111,13 @@ if __name__ == '__main__':
     
     parser = argparse.ArgumentParser(prog="missing_libs", 
         description="What missing_libs does, missing_libs does best.")
-
+    
+    parser.add_argument('-d', '--db-path', type=str, required=True,
+        help="Path to the SQLite database file")
+    parser.add_argument('-s', '--search-path', type=str, required=True,
+        help="Path to the direcotry to search for exectuable files")
+    parser.add_argument('-e', '--file-extension',type=str, default='.so',
+        help="File extention to search for missing libraries")
     parser.add_argument('-o', '--output', type=str, default="",
         help="Output file name")
     parser.add_argument('-v', '--verbose', action='store_true',
