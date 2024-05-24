@@ -35,7 +35,6 @@ from   dorunrun import *
 # imports and objects that were written for this project.
 ###
 import os
-import subprocess
 import sqlite3
 from datetime import datetime
 
@@ -74,13 +73,13 @@ def open_db(name:str) -> tuple:
                              timeout = 5,
                              isolation_level = 'EXCLUSIVE')
         return db, db.cursor()
-
-def check_missinglibs(file:Generator, cursor):
+@trap
+def check_missinglibs(files:Generator, cursor):
     """
     This function checks for missing libraries 
     in the generator of executable files
     """
-    for f in file:
+    for f in files:
         try:
             cmd = f"ldd {f}"
             result = dorunrun(cmd, return_datatype = dict)
