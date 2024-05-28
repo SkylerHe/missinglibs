@@ -111,7 +111,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog="missing_libs", 
         description="What missing_libs does, missing_libs does best.")
     
-    parser.add_argument('-d', '--db-path', type=str, required=True,
+    parser.add_argument('-db', '--db-path', type=str, required=True,
         help="Path to the SQLite database file")
     parser.add_argument('-s', '--search-path', type=str, required=True,
         help="Path to the direcotry to search for exectuable files")
