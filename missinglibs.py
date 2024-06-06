@@ -109,7 +109,7 @@ def missing_libs_main(myargs:argparse.Namespace) -> int:
 if __name__ == '__main__':
     
     parser = argparse.ArgumentParser(prog="missing_libs", 
-        description="What missing_libs does, missing_libs does best.")
+        description="Find missing libraries in all executable files.")
     
     parser.add_argument('-db', '--db-path', type=str, required=True,
         help="Path to the SQLite database file")
